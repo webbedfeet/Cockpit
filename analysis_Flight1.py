@@ -109,6 +109,42 @@ sound_df_smooth = sound_df.rolling(128, center=True).mean()
 
 del bl, bl2
 
+#%% Pre-takeoff to leveling off
+
+plt.plot(sound_df['dev8']['2019-06-10 16:45:00':'2019-06-10 16:47:00'].rolling(512, center=True).mean())
+plt.ylim(1018,1030)
+ax = plt.gca()
+ax.set_yticklabels([])
+ax.set_yticks([])
+plt.xticks(rotation=45)
+plt.savefig('Cockpit/to1.png')
+plt.clf()
+plt.plot(sound_df['dev8']['2019-06-10 16:54:00':'2019-06-10 16:56:00'].rolling(512, center=True).mean())
+plt.ylim(1018,1030)
+ax = plt.gca()
+ax.set_yticklabels([])
+ax.set_yticks([])
+plt.xticks(rotation=45)
+plt.savefig('Cockpit/to2.png')
+plt.clf()
+plt.plot(sound_df['dev8']['2019-06-10 16:58:00':'2019-06-10 17:00:00'].rolling(512, center=True).mean())
+plt.ylim(1018,1030)
+ax = plt.gca()
+ax.set_yticklabels([])
+ax.set_yticks([])
+plt.xticks(rotation=45)
+plt.savefig('Cockpit/to3.png')
+plt.clf()
+
+plt.plot(sound_df['dev8']['2019-06-10 17:02:00':'2019-06-10 17:04:00'].rolling(512, center=True).mean())
+plt.ylim(1018,1030)
+plt.ylim(1018,1030)
+ax = plt.gca()
+ax.set_yticklabels([])
+ax.set_yticks([])
+plt.xticks(rotation=45)
+plt.savefig('Cockpit/to4.png')
+plt.clf()
 #%% Tactical descent 1
 
 d_landing_s = sound_df_smooth['2019-06-10 17:40':'2019-06-10 17:50']
@@ -122,8 +158,24 @@ interesting_dt = ['2019-06-10 ' + t for t in interesting_times]
 plot_panel(d_landing_s, d_landing_m, 'devD', interesting_dt)
 plt.savefig('Cockpit/tactical_landing_1.png')
 
-d1 = d_landing_m['devD']['2019-06-10 15:24:00':'2019-06-10 ']
-plot_panel(d_landing_s, d_landing_m, 'dev8', interest
+d1 = d_landing_m['y']['2019-06-10 17:40':'2019-06-10 17:50']
+plt.plot(d1['devD'])
+plot_times([np.datetime64(u) for u in interesting_dt])
+plot_panel(d_landing_s, d_landing_m, 'dev8', interesting_dt)
+
+f, ax = plt.subplots(2,1, sharex=True)
+d_landing_m['x'].plot(y = 'devD', ax = ax[0], legend=None, xlim = ['2019-06-10 17:45:00','2019-06-10 17:49:00'])
+ax[0].set_ylabel('Device D Motion (x)', ha  = 'right', rotation='horizontal' )
+d_landing_m['y'].plot(y = 'dev8', ax = ax[1], legend=None, xlim = ['2019-06-10 17:45:00','2019-06-10 17:49:00'])
+ax[1].set_ylabel('Device 8 Motion (y)', ha  = 'right', rotation='horizontal' )
+for i in range(len(ax)):
+    ax[i].set_yticklabels([])
+    ax[i].set_yticks([])
+plt.savefig('Cockpit/orientation1.png')
+
+plt.plot(d_landing_m['x']['devD'], ax= ax[0])
+plt.plot(d_landing_m['y']['dev8'], ax = ax[1])
+
 
 #%% Banks and rolls 1
 d_landing_s = sound_df_smooth['2019-06-10 17:00':'2019-06-10 17:40']
@@ -133,16 +185,8 @@ for k in motion_df.keys():
 
 interesting_dt = ['2019-06-10 ' + u  for u in ['17:07','17:12','17:35']]
 
+plot_panel(d_landing_s, d_landing_m, 'dev8',interesting_dt)
 
-f, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, sharex = True)
-d_landing_s.plot(y = 'dev8', ax = ax1)
-plot_times(interesting_dt, ax = ax1)
-d_landing_m['x'].plot(y='dev8', ax=ax2, legend=None)
-plot_times(interesting_dt, ax= ax2)
-d_landing_m['y'].plot(y='dev8', ax=ax3, legend=None)
-plot_times(interesting_dt, ax = ax3)
-d_landing_m['z'].plot(y='dev8', ax=ax4, legend=None)
-plot_times(interesting_dt, ax=ax4)
 
 
 #%% Tactical descent 2 and landing
@@ -156,7 +200,7 @@ interesting_times = ['18:21', '18:24','18:26', '18:33']
 interesting_dt = ['2019-06-10 ' + u for u in interesting_times]
 
 
-plot_panel(d_landing_s, d_landing_m,  'dev8', interesting_dt)
+plot_panel(d_landing_s, d_landing_m,  'devD', interesting_dt)
 plt.savefig('Cockpit/tactical_landing_2.png')
 #%% Second sortie, touch and goes
 

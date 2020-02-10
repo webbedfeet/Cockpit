@@ -16,6 +16,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy import signal
 
 datadir = os.path.expanduser('~/Dropbox/Baabi_GarfieldDeviceDataDownload/Cockpit_418thFlightTestSquadron')
 
@@ -81,6 +82,17 @@ def plot_panel(d_s, d_m, channel, int_times):
         AX[i].set_yticks([])
         AX[i].grid(False)
 
+def butter_highpass(cutoff, fs, order=5):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = signal.butter(order, normal_cutoff, btype='high', analog = False)
+    return b, a
+
+def butter_highpass_filter(data, cutoff, fs, order=5):
+    b,a=butter_highpass(cutoff, fs, order=order)
+    y = signal.filtfilt(b,a,data)
+    return y
+
 #%% Making DFs
 q1 = "Time > '2019-06-12 19:50:00' & Time < '2019-06-13 02:30:00'"
 bl = {}; bl2={'x':{},'y':{}, 'z':{}}
@@ -115,11 +127,15 @@ del bl, bl2
 
 d_tg_s1 = sound_df_smooth['2019-06-12 22:20:00':'2019-06-13 00:15:00']
 d_tg_m1 = {}
-for k in motion_df_smooth.key():
+for k in motion_df_smooth.keys():
     d_tg_m1[k] = pd.DataFrame(motion_df[k])['2019-06-12 22:20:00':'2019-06-13 00:15:00']
 
+interesting_time = ['22:24:58','22:35:40','23:14:23','23:29:48','23:46:05','23:58:56']
+interesting_dt = ['2019-06-12 '+u for u in interesting_time]
 
-
+plot_panel(d_tg_s1, d_tg_m1, 'devD', interesting_dt)
+plot_panel(d_tg_s1, d_tg_m1, 'dev8', interesting_dt)
+plot_panel(d_tg_s1, d_tg_m1, 'dev4', interesting_dt)
 #%% Plots
 
 tg_times = (info.query('EventName == "Go around at touchdown"').
